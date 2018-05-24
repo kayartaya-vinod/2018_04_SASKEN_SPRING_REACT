@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Contact List</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
+
+    <script>
+        function getTableRow(c) {
+            var title = c.gender=='Male'?'Mr.':'Ms.';
+            var name = title + c.firstName + ' ' + c.lastName;
+            var tr = $('<tr>')
+                .append($('<td>').html(c.id))
+                .append($('<td>').html(name))
+                .append($('<td>').html(c.city))
+                .append($('<td>').html(c.email))
+                .append($('<td>').html(c.phone));  
+            return tr;          
+        }
+
+        var pageNo = 0;
+        function loadData() {
+            var options = {};
+            options.method = 'GET';
+            options.url = 'http://localhost:8080/springmvc/api/contacts';
+            options.dataType = "json";
+            options.data = {page: ++pageNo};
+            options.success = function(contacts) {
+                contacts.forEach(function(c){
+                    var tr = getTableRow(c);
+                    $('table > tbody').append(tr);
+                });
+            };
+
+            $.ajax(options);
+        }
+        // first time load
+        loadData();
+        // load on scroll
+        $(window).scroll(function(){
+            
+            var w = $(window);
+            var d = $(document);
+            if(w.scrollTop() + w.height() == d.height()) {
+                loadData();
+            }
+            console.log('w.scrollTop()', w.scrollTop());
+        });
+
+
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Contact List</h1>
+
+        <!-- table.table>(thead>tr>th*5)+tbody -->
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>City</th>
+                    <th>Email address</th>
+                    <th>Phone number</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</body>
+</html>
